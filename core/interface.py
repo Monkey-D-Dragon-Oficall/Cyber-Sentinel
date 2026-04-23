@@ -9,7 +9,7 @@ class CyberInterface:
     def __init__(self, author="Monkey-D-Dragon-Oficall"):
         self.author = author
         self.github = "https://github.com/Monkey-D-Dragon-Oficall"
-        self.version = "2050.1.0"
+        self.version = "2050.OMNI-EDITION"
         self.banner = f"""
     \033[1;96m
     ╔══════════════════════════════════════════════════════════════════════╗
@@ -32,11 +32,11 @@ class CyberInterface:
     def show_menu(self):
         self.clear_screen()
         print(self.banner)
-        print("\033[1;97m[ ⚡ NEURAL CONTROL CENTER ]\033[0m")
-        print("\033[92m[1]\033[0m Full System Penetration Scan")
+        print("\033[1;97m[ ⚡ OMNI-CONTROL CENTER ]\033[0m")
+        print("\033[92m[1]\033[0m Full Omni-Scan (Recon + Ports + Vuln)")
         print("\033[92m[2]\033[0m Deep Reconnaissance (OSINT & JS)")
-        print("\033[92m[3]\033[0m Hyper-Vulnerability Fuzzing")
-        print("\033[92m[4]\033[0m Access Internal Storage (Reports)")
+        print("\033[92m[3]\033[0m Deep Port Scan & Service Discovery")
+        print("\033[92m[4]\033[0m Access Structural Storage (Reports)")
         print("\033[92m[5]\033[0m System Configuration")
         print("\033[91m[0]\033[0m Terminate Session")
         print("\n" + "\033[1;96m" + "═"*70 + "\033[0m")

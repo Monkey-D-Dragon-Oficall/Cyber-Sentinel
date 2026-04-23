@@ -7,6 +7,7 @@ from recon.subdomain_enum import SubdomainEnum
 from recon.asset_discovery import AssetDiscovery
 from recon.js_secret_finder import JSSecretFinder
 from vulnerability_scanner.web_fuzzer import WebFuzzer
+from vulnerability_scanner.deep_scanner import DeepScanner
 from ai_evasion.evasion_system import EvasionSystem
 from orchestration_reporting.reporter import Reporter
 from core.interface import CyberInterface
@@ -63,12 +64,20 @@ async def run_scan(target_input: str, mode="full"):
 
     # 2. Vulnerability Scanning Phase
     if mode in ["full", "vuln"]:
-        interface.show_status("\nInitiating Phase 2: Hyper-Vulnerability Fuzzing", "success")
+        interface.show_status("\nInitiating Phase 2: Deep System Scanning", "success")
+        
+        # Deep Port Scan (Nmap Style)
+        deep_scanner = DeepScanner(target_domain)
+        port_results = await deep_scanner.run()
+        interface.show_status(f"Port Scan complete. {len(port_results)} open ports found.")
+        
+        # Hyper Fuzzing
         fuzzer = WebFuzzer(target_url)
         fuzz_results = await fuzzer.run()
         interface.show_status(f"Fuzzing complete. {len(fuzz_results)} sensitive vectors identified.")
         
         all_results.update({
+            "Open Ports & Services": port_results,
             "Vulnerability Vectors (Fuzzing)": fuzz_results
         })
 
@@ -79,25 +88,10 @@ async def run_scan(target_input: str, mode="full"):
     # عرض التقرير المباشر
     reporter.display_live_report()
     
-    # نظام الحفظ الذكي 2050
-    print("\033[1;93m[?] SELECT STORAGE PROTOCOL:\033[0m")
-    print("1. Internal Secure Storage (core/storage/reports/)")
-    print("2. External Custom Export (Choose path)")
-    print("3. Volatile Session (No save)")
-    
-    save_choice = input("\n[#] Protocol: ")
-    
-    if save_choice in ['1', '2']:
-        safe_filename = target_domain.replace(".", "_").replace(":", "_")
-        custom_path = None
-        if save_choice == '2':
-            custom_path = input("[?] Enter export directory path: ")
-            if not custom_path: custom_path = "."
-        
-        json_file, md_file = reporter.save_report(f"{safe_filename}_report", custom_path)
-        interface.show_status(f"Intelligence saved to: {os.path.abspath(json_file)}", "success")
-    else:
-        interface.show_status("Session terminated without data persistence.", "warning")
+    # نظام الحفظ الهيكلي Omni-Edition
+    interface.show_status("Saving intelligence to structural storage...", "info")
+    storage_path = reporter.save_all()
+    interface.show_status(f"All results saved in: {storage_path}", "success")
 
 async def interactive_main():
     interface = CyberInterface()
@@ -115,19 +109,23 @@ async def interactive_main():
         elif choice == '3':
             target = interface.get_target()
             await run_scan(target, mode="vuln")
-            input("\n[!] Press Enter to return to Neural Center...")
+            input("\n[!] Press Enter to return to Omni-Center...")
         elif choice == '4':
-            print("\n\033[1;97m[ INTERNAL STORAGE ACCESS ]\033[0m")
+            print("\n\033[1;97m[ STRUCTURAL STORAGE ACCESS ]\033[0m")
             report_dir = os.path.join(os.path.dirname(__file__), "core", "storage", "reports")
             if os.path.exists(report_dir):
-                files = [f for f in os.listdir(report_dir) if f != ".gitkeep"]
-                if not files:
+                targets = [d for d in os.listdir(report_dir) if os.path.isdir(os.path.join(report_dir, d))]
+                if not targets:
                     print("    \033[90m└─ Storage is empty.\033[0m")
-                for f in files:
-                    print(f"    \033[92m└─▶\033[0m {f}")
+                for t in targets:
+                    print(f"    \033[1;94m[▼] Target: {t}\033[0m")
+                    t_path = os.path.join(report_dir, t)
+                    sessions = sorted(os.listdir(t_path), reverse=True)
+                    for s in sessions[:3]: # عرض آخر 3 جلسات لكل هدف
+                        print(f"        \033[92m└─▶ Session: {s}\033[0m")
             else:
                 print("    \033[91m└─ Storage offline.\033[0m")
-            input("\n[!] Press Enter to return to Neural Center...")
+            input("\n[!] Press Enter to return to Omni-Center...")
         elif choice == '0':
             print("\n\033[1;91m[!] Session Terminated. Goodbye, Commander.\033[0m")
             break
