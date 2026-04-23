@@ -18,26 +18,54 @@ class Reporter:
         if not os.path.exists(self.report_dir):
             os.makedirs(self.report_dir)
 
-    def generate_json_report(self, filename: str):
+    def display_live_report(self):
         """
-        توليد تقرير بصيغة JSON
+        عرض النتائج مباشرة في الواجهة بشكل منسق
         """
-        filepath = os.path.join(self.report_dir, filename)
+        print(f"\n\033[92m" + "="*60)
+        print(f"📊 LIVE SECURITY REPORT FOR: {self.target}")
+        print(f"👤 Author: {self.author}")
+        print(f"📅 Date: {self.timestamp}")
+        print("="*60 + "\033[0m")
+        
+        for category, findings in self.results.items():
+            print(f"\n\033[1m[ {category} ]\033[0m")
+            if not findings:
+                print("  - No findings in this category.")
+            else:
+                for finding in findings:
+                    print(f"  \033[94m»\033[0m {finding}")
+        print(f"\n\033[92m" + "="*60 + "\033[0m\n")
+
+    def generate_json_report(self, filename: str, custom_path: str = None):
+        """
+        توليد تقرير بصيغة JSON مع خيار مسار مخصص
+        """
+        save_dir = custom_path if custom_path else self.report_dir
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir, exist_ok=True)
+            
+        filepath = os.path.join(save_dir, filename)
         report_data = {
             "target": self.target,
             "scan_time": self.timestamp,
             "author": self.author,
+            "github": self.github,
             "vulnerabilities": self.results
         }
         with open(filepath, 'w', encoding='utf-8') as f:
             json.dump(report_data, f, indent=4, ensure_ascii=False)
         return filepath
 
-    def generate_markdown_report(self, filename: str):
+    def generate_markdown_report(self, filename: str, custom_path: str = None):
         """
-        توليد تقرير بصيغة Markdown احترافية
+        توليد تقرير بصيغة Markdown احترافية مع خيار مسار مخصص
         """
-        filepath = os.path.join(self.report_dir, filename)
+        save_dir = custom_path if custom_path else self.report_dir
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir, exist_ok=True)
+
+        filepath = os.path.join(save_dir, filename)
         md_content = f"# 🛡️ CyberSentinel Security Report\n\n"
         md_content += f"**Target:** {self.target}\n"
         md_content += f"**Scan Date:** {self.timestamp}\n"

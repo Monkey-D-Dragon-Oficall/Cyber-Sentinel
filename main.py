@@ -74,13 +74,34 @@ async def run_scan(target_input: str, mode="full"):
 
     # 3. Reporting Phase
     interface.show_status("\nPhase 3: Generating Reports", "success")
-    safe_filename = target_domain.replace(".", "_").replace(":", "_")
     reporter = Reporter(target_domain, all_results)
-    json_file = reporter.generate_json_report(f"{safe_filename}_report.json")
-    md_file = reporter.generate_markdown_report(f"{safe_filename}_report.md")
     
-    interface.show_status(f"Scan Complete! Reports saved in 'reports/' folder:", "success")
-    print(f" - {json_file}\n - {md_file}")
+    # عرض التقرير المباشر فوراً
+    reporter.display_live_report()
+    
+    # تخيير المستخدم حول الحفظ
+    print("\033[93m[?] How would you like to save the report?\033[0m")
+    print("1. Save with default name in 'reports/' folder")
+    print("2. Save with custom name and path")
+    print("3. Don't save, just show on screen")
+    
+    save_choice = input("\nSelect option (1-3): ")
+    
+    if save_choice == '1':
+        safe_filename = target_domain.replace(".", "_").replace(":", "_")
+        json_file = reporter.generate_json_report(f"{safe_filename}_report.json")
+        md_file = reporter.generate_markdown_report(f"{safe_filename}_report.md")
+        interface.show_status(f"Reports saved successfully in 'reports/' folder.", "success")
+    elif save_choice == '2':
+        custom_name = input("Enter custom filename (without extension): ")
+        custom_path = input("Enter custom directory path (press Enter for current dir): ")
+        if not custom_path: custom_path = "."
+        
+        json_file = reporter.generate_json_report(f"{custom_name}.json", custom_path)
+        md_file = reporter.generate_markdown_report(f"{custom_name}.md", custom_path)
+        interface.show_status(f"Reports saved in: {os.path.abspath(custom_path)}", "success")
+    else:
+        interface.show_status("Report not saved to disk.", "warning")
 
 async def interactive_main():
     interface = CyberInterface()

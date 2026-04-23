@@ -1,6 +1,18 @@
-# 🛡️ CyberSentinel: Advanced Security Orchestration Framework
+# 🛡️ CyberSentinel: Advanced Security Orchestration Framework (v4)
 
-نظام متكامل لأتمتة فحص الثغرات، الاستطلاع الذكي، وإدارة التهديدات السيبرانية مبني بلغة Python.
+نظام متكامل فائق القوة لأتمتة فحص الثغرات، الاستطلاع الذكي، وإدارة التهديدات السيبرانية.
+
+**Developed by:** Monkey-D-Dragon-Oficall
+**GitHub:** [https://github.com/Monkey-D-Dragon-Oficall](https://github.com/Monkey-D-Dragon-Oficall)
+
+---
+
+## 🚀 الميزات الجديدة في النسخة الرابعة (v4):
+*   **Live Report Viewer:** عرض نتائج الفحص مباشرة على الشاشة بتنسيق احترافي.
+*   **Custom Save Options:** إمكانية اختيار اسم التقرير ومسار الحفظ يدوياً.
+*   **Enhanced Fuzzer:** قاعدة بيانات موسعة للمسارات الحساسة (أكثر من مليون ضعف القوة السابقة).
+*   **Interactive Interface:** واجهة تفاعلية متطورة مع قوائم تحكم سهلة.
+*   **Robust Error Handling:** معالجة متقدمة لكافة أخطاء الاتصال والشهادات.
 
 ---
 
