@@ -16,19 +16,25 @@ class SubdomainEnum:
         """
         استخراج النطاقات الفرعية من شهادات SSL عبر crt.sh
         """
+        if not self.domain or "." not in self.domain:
+            return []
+            
         url = f"https://crt.sh/?q=%.{self.domain}&output=json"
         try:
             async with aiohttp.ClientSession() as session:
-                async with session.get(url, timeout=15) as response:
+                async with session.get(url, timeout=20) as response:
                     if response.status == 200:
-                        data = await response.json()
-                        for entry in data:
-                            name = entry['name_value']
-                            # تنظيف النتائج من النجوم والأسماء المتعددة
-                            sub_list = name.split('\n')
-                            for sub in sub_list:
-                                if sub.endswith(self.domain) and "*" not in sub:
-                                    self.subdomains.add(sub.strip().lower())
+                        try:
+                            data = await response.json()
+                            for entry in data:
+                                name = entry.get('name_value', '')
+                                sub_list = name.split('\n')
+                                for sub in sub_list:
+                                    if sub.endswith(self.domain) and "*" not in sub:
+                                        self.subdomains.add(sub.strip().lower())
+                        except Exception:
+                            # أحياناً crt.sh يعيد نصاً بدلاً من JSON عند الضغط العالي
+                            pass
         except Exception as e:
             print(f"[!] Error fetching from crt.sh: {e}")
         return list(self.subdomains)

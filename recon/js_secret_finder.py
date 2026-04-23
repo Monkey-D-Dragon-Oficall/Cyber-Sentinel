@@ -24,9 +24,10 @@ class JSSecretFinder:
         استخراج كافة روابط ملفات JS من الصفحة الرئيسية
         """
         js_files = []
+        headers = {"User-Agent": "Mozilla/5.0"}
         try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(self.target_url, timeout=10) as response:
+            async with aiohttp.ClientSession(headers=headers) as session:
+                async with session.get(self.target_url, timeout=15, ssl=False) as response:
                     if response.status == 200:
                         html = await response.text()
                         soup = BeautifulSoup(html, 'html.parser')
@@ -35,7 +36,7 @@ class JSSecretFinder:
                             if src:
                                 js_files.append(urljoin(self.target_url, src))
         except Exception as e:
-            print(f"[!] Error finding JS files: {e}")
+            print(f"[!] Error finding JS files on {self.target_url}: {e}")
         return js_files
 
     async def scan_js_file(self, js_url: str):
@@ -43,9 +44,10 @@ class JSSecretFinder:
         فحص ملف JS واحد بحثاً عن الأسرار
         """
         found_secrets = []
+        headers = {"User-Agent": "Mozilla/5.0"}
         try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(js_url, timeout=10) as response:
+            async with aiohttp.ClientSession(headers=headers) as session:
+                async with session.get(js_url, timeout=15, ssl=False) as response:
                     if response.status == 200:
                         content = await response.text()
                         for name, pattern in self.secrets_patterns.items():

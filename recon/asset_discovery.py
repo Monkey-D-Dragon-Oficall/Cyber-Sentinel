@@ -15,24 +15,30 @@ class AssetDiscovery:
         """
         fingerprint = {}
         try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(self.target_url, timeout=10) as response:
-                    headers = response.headers
-                    fingerprint['Server'] = headers.get('Server', 'Unknown')
-                    fingerprint['X-Powered-By'] = headers.get('X-Powered-By', 'Unknown')
-                    fingerprint['Content-Type'] = headers.get('Content-Type', 'Unknown')
+            # استخدام رؤوس طلبات واقعية لتجنب الحظر
+            headers = {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+            }
+            async with aiohttp.ClientSession(headers=headers) as session:
+                async with session.get(self.target_url, timeout=15, ssl=False) as response:
+                    resp_headers = response.headers
+                    fingerprint['Server'] = resp_headers.get('Server', 'Unknown')
+                    fingerprint['X-Powered-By'] = resp_headers.get('X-Powered-By', 'Unknown')
+                    fingerprint['Content-Type'] = resp_headers.get('Content-Type', 'Unknown')
                     
-                    # محاولة بسيطة للتعرف على CMS
-                    body = await response.text()
-                    if "wp-content" in body:
-                        fingerprint['CMS'] = "WordPress"
-                    elif "drupal" in body.lower():
-                        fingerprint['CMS'] = "Drupal"
-                    else:
+                    try:
+                        body = await response.text()
+                        if "wp-content" in body:
+                            fingerprint['CMS'] = "WordPress"
+                        elif "drupal" in body.lower():
+                            fingerprint['CMS'] = "Drupal"
+                        else:
+                            fingerprint['CMS'] = "Unknown"
+                    except:
                         fingerprint['CMS'] = "Unknown"
                         
         except Exception as e:
-            print(f"[!] Error fingerprinting: {e}")
+            print(f"[!] Error fingerprinting {self.target_url}: {e}")
         return fingerprint
 
     async def run(self):
