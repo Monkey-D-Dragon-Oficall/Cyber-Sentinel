@@ -1,12 +1,11 @@
 import json
-from datetime import datetime
-
 import os
+from datetime import datetime
 
 class Reporter:
     """
-    نظام توليد التقارير (Automated Professional Reporting)
-    توليد تقارير بصيغة JSON و Markdown مع حفظها في مجلد مخصص.
+    CyberSentinel 2050 - Advanced Reporting Engine
+    نظام تقارير مستقبلي يدمج النتائج داخلياً ويوفر عرضاً حياً فائق الدقة.
     """
     def __init__(self, target: str, results: dict, author: str = "Monkey-D-Dragon-Oficall"):
         self.target = target
@@ -14,75 +13,76 @@ class Reporter:
         self.author = author
         self.github = "https://github.com/Monkey-D-Dragon-Oficall"
         self.timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        self.report_dir = "reports"
-        if not os.path.exists(self.report_dir):
-            os.makedirs(self.report_dir)
+        # المجلد الداخلي الجديد للبلاغات
+        self.internal_storage = os.path.join(os.path.dirname(os.path.dirname(__file__)), "core", "storage", "reports")
+        if not os.path.exists(self.internal_storage):
+            os.makedirs(self.internal_storage, exist_ok=True)
 
     def display_live_report(self):
         """
-        عرض النتائج مباشرة في الواجهة بشكل منسق
+        عرض النتائج مباشرة بتنسيق مستقبلي فائق الجودة
         """
-        print(f"\n\033[92m" + "="*60)
-        print(f"📊 LIVE SECURITY REPORT FOR: {self.target}")
-        print(f"👤 Author: {self.author}")
-        print(f"📅 Date: {self.timestamp}")
-        print("="*60 + "\033[0m")
+        print(f"\n\033[1;96m" + "╔" + "═"*68 + "╗")
+        print(f"║ \033[1;92mCYBERSENTINEL 2050 - QUANTUM SECURITY REPORT\033[1;96m {' '*(23)} ║")
+        print(f"╠" + "═"*68 + "╣")
+        print(f"║ \033[1mTARGET:\033[0m {self.target.ljust(58)} ║")
+        print(f"║ \033[1mAUTHOR:\033[0m {self.author.ljust(58)} ║")
+        print(f"║ \033[1mSTAMP :\033[0m {self.timestamp.ljust(58)} ║")
+        print(f"╚" + "═"*68 + "╝\033[0m")
         
         for category, findings in self.results.items():
-            print(f"\n\033[1m[ {category} ]\033[0m")
+            print(f"\n\033[1;93m[⚡] {category.upper()}\033[0m")
             if not findings:
-                print("  - No findings in this category.")
+                print("    \033[90m└─ No anomalies detected in this sector.\033[0m")
             else:
                 for finding in findings:
-                    print(f"  \033[94m»\033[0m {finding}")
-        print(f"\n\033[92m" + "="*60 + "\033[0m\n")
+                    print(f"    \033[92m└─▶\033[0m {finding}")
+        print(f"\n\033[1;96m" + "═"*70 + "\033[0m\n")
 
-    def generate_json_report(self, filename: str, custom_path: str = None):
+    def save_report(self, filename: str, custom_path: str = None):
         """
-        توليد تقرير بصيغة JSON مع خيار مسار مخصص
+        حفظ التقرير في المجلد الداخلي أو مسار مخصص
         """
-        save_dir = custom_path if custom_path else self.report_dir
-        if not os.path.exists(save_dir):
-            os.makedirs(save_dir, exist_ok=True)
+        target_dir = custom_path if custom_path else self.internal_storage
+        if not os.path.exists(target_dir):
+            os.makedirs(target_dir, exist_ok=True)
             
-        filepath = os.path.join(save_dir, filename)
+        json_path = os.path.join(target_dir, f"{filename}.json")
+        md_path = os.path.join(target_dir, f"{filename}.md")
+        
         report_data = {
-            "target": self.target,
-            "scan_time": self.timestamp,
-            "author": self.author,
-            "github": self.github,
-            "vulnerabilities": self.results
+            "metadata": {
+                "version": "2050.1.0",
+                "author": self.author,
+                "github": self.github,
+                "timestamp": self.timestamp,
+                "target": self.target
+            },
+            "findings": self.results
         }
-        with open(filepath, 'w', encoding='utf-8') as f:
+        
+        # Save JSON
+        with open(json_path, 'w', encoding='utf-8') as f:
             json.dump(report_data, f, indent=4, ensure_ascii=False)
-        return filepath
-
-    def generate_markdown_report(self, filename: str, custom_path: str = None):
-        """
-        توليد تقرير بصيغة Markdown احترافية مع خيار مسار مخصص
-        """
-        save_dir = custom_path if custom_path else self.report_dir
-        if not os.path.exists(save_dir):
-            os.makedirs(save_dir, exist_ok=True)
-
-        filepath = os.path.join(save_dir, filename)
-        md_content = f"# 🛡️ CyberSentinel Security Report\n\n"
-        md_content += f"**Target:** {self.target}\n"
-        md_content += f"**Scan Date:** {self.timestamp}\n"
-        md_content += f"**Developed by:** {self.author}\n"
-        md_content += f"**GitHub:** {self.github}\n\n"
-        md_content += "--- \n\n"
-        md_content += "## 🔍 Summary of Findings\n\n"
+            
+        # Save Markdown
+        md_content = f"# 🛡️ CyberSentinel 2050 - Security Analysis\n\n"
+        md_content += f"**Target:** `{self.target}`\n"
+        md_content += f"**Analyst:** {self.author}\n"
+        md_content += f"**GitHub:** {self.github}\n"
+        md_content += f"**Timestamp:** {self.timestamp}\n\n"
+        md_content += "---\n\n## 🔍 Intelligence Summary\n\n"
         
         for category, findings in self.results.items():
-            md_content += f"### {category}\n"
+            md_content += f"### ⚡ {category}\n"
             if not findings:
-                md_content += "No vulnerabilities found.\n\n"
+                md_content += "_No critical findings._\n\n"
             else:
                 for finding in findings:
-                    md_content += f"- **Finding:** {finding}\n"
+                    md_content += f"- {finding}\n"
                 md_content += "\n"
         
-        with open(filename, 'w', encoding='utf-8') as f:
+        with open(md_path, 'w', encoding='utf-8') as f:
             f.write(md_content)
-        return filename
+            
+        return json_path, md_path
